@@ -10,9 +10,15 @@ from datetime import datetime
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
-from opencensus.trace.tracer import Tracer
+from opencensus.stats import aggregation as aggregation_module
+from opencensus.stats import measure as measure_module
+from opencensus.stats import stats as stats_module
+from opencensus.stats import view as view_module
+from opencensus.tags import tag_map as tag_map_module
+from opencensus.trace import config_integration
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.trace.samplers import ProbabilitySampler
+from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
 # App Insights
@@ -125,12 +131,12 @@ def index():
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
             # TODO: use logger object to log cat vote
-            logger.warning('Cats Vote', extra=properties)
+            logger.info('Cats Vote', extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
             # TODO: use logger object to log dog vote
-            logger.warning('Dogs Vote', extra=properties)
+            logger.info('Dogs Vote', extra=properties)
 
             # Empty table and return results
             r.set(button1, 0)
@@ -146,8 +152,12 @@ def index():
 
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
-            vote2 = r.get(button2).decode('utf-8')
+            properties = {'custom_dimensions': {'Cats Vote': vote1}}
+            logger.info('Cats Vote', extra=properties)
 
+            vote2 = r.get(button2).decode('utf-8')
+            properties = {'custom_dimensions': {'Dogs Vote': vote2}}
+            logger.info('Dogs Vote', extra=properties)
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
