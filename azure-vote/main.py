@@ -6,6 +6,7 @@ import socket
 import sys
 import logging
 from datetime import datetime
+
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
@@ -72,6 +73,23 @@ else:
 
 # Redis Connection
 r = redis.Redis()
+# if ("REDIS" in os.environ and os.environ['REDIS']):
+#     redis_server = os.environ['REDIS']
+# else:
+#     redis_server = app.config['REDIS']
+
+#    # Redis Connection to another container
+# try:
+#     if "REDIS_PWD" in os.environ:
+#         r = redis.StrictRedis(host=redis_server,
+#                            port=6379,
+#                            password=os.environ['REDIS_PWD'])
+#     else:
+#         r = redis.Redis(redis_server)
+#     r.ping()
+# except redis.ConnectionError:
+#       exit('Failed to connect to Redis, terminating.')
+
 
 # Change title to host name to demo NLB
 if app.config['SHOWHOST'] == "true":
@@ -92,8 +110,10 @@ def index():
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
         # TODO: use tracer object to trace cat vote
+        tracer.span(name="Cats Vote")
         vote2 = r.get(button2).decode('utf-8')
         # TODO: use tracer object to trace dog vote
+        tracer.span(name="Dogs Vote")
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
