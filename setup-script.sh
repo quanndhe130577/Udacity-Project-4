@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-resourceGroup="acdnd-c4-project"
+resourceGroup="quannd12_project_4"
 location="westus"
 osType="UbuntuLTS"
 vmssName="udacity-vmss"
